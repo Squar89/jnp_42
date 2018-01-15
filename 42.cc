@@ -1,12 +1,3 @@
-=== Zadanie 42 ===
-
-W tym roku chcieliśmy zamiast ostatniego zadania opublikować jego rozwiązanie,
-ale niestety, zanim zdążyliśmy to zrobić, nastąpiła awaria i utraciliśmy spore
-fragmenty pliku.
-
-Zatem niestety zadanie jest i polega na doprowadzeniu poniższego kodu, który
-udało się odzyskać, do pierwotnego stanu.
-
 #include <stack>
 #include <string>
 #include <functional>
@@ -126,19 +117,3 @@ int main() {
 
     return 0;
 }
-
-=== Ustalenia techniczne ===
-
-Program będzie kompilowany z parametrami
-
--Wall -Wextra -O2 -std=c++17
-
-Jako rozwiązanie należy dostarczyć uzupełniony powyższy kod umieszczony w pliku
-42.cc, który należy zdeponować w repozytorium w katalogu
-
-grupaN/zadanie7/ab123456
-
-gdzie N jest numerem grupy, a ab123456 jest identyfikatorem umieszczającego to
-rozwiązanie. Katalog z rozwiązaniem nie powinien zawierać innych plików, ale
-może zawierać podkatalog private, gdzie można umieszczać różne pliki, np. swoje
-testy. Pliki umieszczone w tym podkatalogu nie będą oceniane.
