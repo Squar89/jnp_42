@@ -3,17 +3,71 @@
 #include <functional>
 #include <exception>
 #include <cassert>
+#include <unordered_map>
 
-@j&_o127
+struct OperatorAlreadyDefined : public std::exception {
+    char const *what() const throw() override { return "OperatorAlreadyDefined"; }
+};
+
+struct SyntaxError : public std::exception {
+    char const *what() const throw() override { return "SyntaxError"; }
+};
+
+struct UnknownOperator : public std::exception {
+    char const *what() const throw() override { return "UnknownOperator"; }
+};
+
+/* Function (void) -> (int) */
+typedef std::function<int()> Lazy;
 
 class LazyCalculator {
-    $__*k23$
+    /* Unordered map of known operators. Starts with +, -, *, / */
+    std::unordered_map <char, std::function<int(Lazy, Lazy)> > operators {
+        {'+', [](Lazy a, Lazy b) { return a() + b(); }},
+        {'-', [](Lazy a, Lazy b) { return a() - b(); }},
+        {'*', [](Lazy a, Lazy b) { return a() * b(); }},
+        {'/', [](Lazy a, Lazy b) { return a() / b(); }}
+    };
+    /* Unordered map of three preset literals: 0, 2, 4 */
+    std::unordered_map <char, Lazy> literals {
+        {'0', []{ return 0; }},
+        {'2', []{ return 2; }},
+        {'4', []{ return 4; }}
+    };
 
     public:
-        _=+^#!@%
-
         Lazy parse(const std::string& s) const {
-            ...><a~_
+            /* stack of past literals/results of operations */
+            std::stack <Lazy> lazyStack;
+
+            for (char c : s) {
+                auto literal = literals.find(c);
+                if (literal != literals.end()) {
+                    lazyStack.push(literal->second);
+                }
+                else {
+                    auto op = operators.find(c);
+                    if (op == operators.end()) {
+                        throw UnknownOperator();
+                    }
+                    else if (lazyStack.size() < 2) {
+                        throw SyntaxError();
+                    }
+
+                    Lazy first = lazyStack.top();
+                    lazyStack.pop();
+                    Lazy second = lazyStack.top();
+                    lazyStack.pop();
+
+                    lazyStack.push([first, second, op]() { return op->second(second, first); });
+                }
+            }
+
+            if (lazyStack.size() != 1) {
+                throw SyntaxError();
+            }
+
+            return lazyStack.top();
         }
 
         int calculate(const std::string& s) const {
@@ -21,7 +75,11 @@ class LazyCalculator {
         }
 
         void define(char c, std::function<int(Lazy, Lazy)> fn) {
-            %%_jo12.
+            if (operators.find(c) != operators.end() || literals.find(c) != literals.end()) {
+                throw OperatorAlreadyDefined();
+            }
+
+            operators.insert(make_pair(c, fn));
         }
 };
 
